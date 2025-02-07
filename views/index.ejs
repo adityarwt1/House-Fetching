@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+    <title>Home Listings</title>
+</head>
+<body class="bg-gray-100">
+    <nav class="p-4 flex shadow-md justify-between items-center bg-white">    
+        <div class="text-2xl font-medium w-full items-center flex m-2">
+            <a class="ml-2" href="/" class="border-r pr-1">Home</a>
+            <a class="ml-2" href="/houses"  class="border-r pr-1">Houses</a>
+            <a class="ml-2" href="/about" class="border-r pr-1">About</a>
+            <a class="ml-2" href="/add-house" class="border-r pr-1">Add House</a>
+        </div>
+        <div class="w-full items-center flex justify-center">
+            <input type="search" class="w-1/2 p-2 rounded-full bg-gray-100 border outline-none" placeholder="Search">
+        </div>
+        <div class="w-full items-center flex justify-end">
+            <div class="w-10 h-10 bg-green-300 rounded-full"></div>
+        </div>
+    </nav>  
+
+    <div class="container mx-auto mt-10">
+        <h1 class="text-3xl font-bold text-center mb-6">Available Houses</h1>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <% houses.forEach(house => { %>
+                <div class="bg-white p-4 rounded-lg shadow-md hover:scale-105">
+                    <img src="<%= house.image %>" alt="House Image" class="w-full h-48 object-cover rounded-lg">
+                    <h2 class="text-xl font-semibold mt-2"><%= house.name %></h2>
+                    <p class="text-gray-600">Owner: <%= house.owner %></p>
+                    <p class="text-gray-600"><%= house.location %></p>
+                    <p class="text-gray-600"><%= house.description %></p>
+                    <p class="text-green-600 font-bold mt-2">$<%= house.price %></p>
+                    <button class="bg-blue-500 text-white px-4 py-2 rounded mt-3 w-full">Book Now</button>
+                </div>
+            <% }) %>
+        </div>
+    </div>
+</body>
+</html>
