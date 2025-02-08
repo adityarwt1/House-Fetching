@@ -1,25 +1,47 @@
 const express = require("express");
-const mongoose = require("mongoose");
-const path = require("path");
-
 const app = express();
+const urlRoute = require("./routes/url");
+require("dotenv").config();
+const { connectToMongoDb } = require("./lib/connect");
+const URL = require("./models/url");
 
-// Connect to MongoDB
-mongoose.connect("mongodb+srv://adita_rwt1:14920251@mongoongoing.ysjj1.mongodb.net/", {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-}).then(() => console.log("MongoDB Connected"))
-  .catch(err => console.error("MongoDB Connection Error:", err));
-
-// Middleware
-app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, "public")));
-app.set("view engine", "ejs");
-
-// Routes
-const houseRoutes = require("./routes/index");
-app.use("/", houseRoutes);
-
-// Start server
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+connectToMongoDb(process.env.MONGODB_URI).then(() => {
+    console.log("Connected to MongoDB");
+});
+app.set("view engine" , "ejs")
+app.set("views" , "views")
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+app.use("/url", urlRoute);
+
+app.get("/:shortid", async (req, res) => {
+    try {
+        const { shortid } = req.params;
+
+        const entry = await URL.findOneAndUpdate(
+            { shortid },
+            {
+                $push: {
+                    visitHistory: {
+                        timestamp: Date.now()
+                    }
+                }
+            },
+            { new: true }
+        );
+
+        if (!entry) {
+            return res.status(404).json({ error: "Short URL not found" });
+        }
+
+        res.redirect(entry.redirectURL);
+    } catch (error) {
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
+
+app.listen(PORT, () => {
+    console.log(`Server is running at http://localhost:${PORT}`);
+});
